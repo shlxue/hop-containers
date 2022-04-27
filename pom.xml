@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.apache</groupId>
+        <artifactId>apache</artifactId>
+        <version>23</version>
+    </parent>
+
+    <groupId>org.apache.hop</groupId>
+    <artifactId>hop-containers</artifactId>
+    <version>2.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <name>Hop Runtime Containers</name>
+
+    <properties>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+
+        <hop.version>2.0.0-SNAPSHOT</hop.version>
+        <beam.version>2.35.0</beam.version>
+        <flink.base-ver>1.13</flink.base-ver>
+        <flink.version>1.13.5</flink.version>
+        <scala-bin.version>2.11</scala-bin.version>
+        <spark.version>3.1.2</spark.version>
+        <spark-bin.version>2.12</spark-bin.version>
+
+        <spring-boot.version>2.6.3</spring-boot.version>
+
+        <exec.executable>java</exec.executable>
+    </properties>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>build-helper-maven-plugin</artifactId>
+                    <version>3.3.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <version>3.0.0</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-antrun-plugin</artifactId>
+                    <version>3.1.0</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.8.1</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>3.0.0-M6</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>3.0.0-M6</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-scm-plugin</artifactId>
+                    <version>1.11.2</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-shade-plugin</artifactId>
+                    <version>3.3.0</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <plugins>
+            <plugin>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <configuration>
+                    <rules>
+                        <banDuplicatePomDependencyVersions/>
+                        <requireJavaVersion>
+                            <version>[11,12)</version>
+                        </requireJavaVersion>
+                        <requireSameVersions>
+                            <dependencies>
+                                <dependency>org.apache.beam</dependency>
+                            </dependencies>
+                            <dependencies>
+                                <dependency>org.apache.flink</dependency>
+                            </dependencies>
+                            <dependencies>
+                                <dependency>org.apache.hop</dependency>
+                            </dependencies>
+                            <dependencies>
+                                <dependency>io.grpc</dependency>
+                            </dependencies>
+                            <dependencies>
+                                <dependency>org.eclipse.jetty</dependency>
+                            </dependencies>
+                            <dependencies>
+                                <dependency>org.springframework</dependency>
+                            </dependencies>
+                            <dependencies>
+                                <dependency>com.fasterxml.jackson.core</dependency>
+                            </dependencies>
+                            <dependencies>
+                                <dependency>org.apache.commons.vfs2</dependency>
+                            </dependencies>
+                        </requireSameVersions>
+                        <!--banTransitiveDependencies>
+                            <excludes>
+                                <exclude>org.eclipse.platform:org.eclipse.swt</exclude>
+                            </excludes>
+                            <includes>
+                                <include>org.eclipse.platform:org.eclipse.swt</include>
+                            </includes>
+                        </banTransitiveDependencies-->
+                    </rules>
+                    <fail>true</fail>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-remote-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>process-resource-bundles</id>
+                        <phase>none</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-site-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-descriptor</id>
+                        <phase>none</phase>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.apache.beam</groupId>
+                <artifactId>beam-sdks-java-bom</artifactId>
+                <version>${beam.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <modules>
+        <module>flink-bom</module>
+        <module>hop-bom</module>
+
+        <module>hop-scope</module>
+        <module>jdbc-driver-bundle</module>
+
+        <module>hop-it-testing</module>
+        <module>it</module>
+
+        <module>jandex-merge-tool</module>
+        <module>shaded</module>
+        <module>vendor</module>
+        <module>containers</module>
+    </modules>
+</project>

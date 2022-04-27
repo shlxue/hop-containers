@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.apache.hop</groupId>
+        <artifactId>shaded</artifactId>
+        <version>2.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>beam-extensions</artifactId>
+    <packaging>pom</packaging>
+    <name>Beam SDKS Java IO</name>
+    <properties>
+        <dist.shade-phase>package</dist.shade-phase>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-shade-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>shade-dist</id>
+                        <phase>${dist.shade-phase}</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <shadeTestJar>false</shadeTestJar>
+                            <outputFile>${project.build.directory}/${shaded.final-name}.jar</outputFile>
+                            <artifactSet>
+                                <excludes>
+                                    <exclude>com.fasterxml.jackson.core:*</exclude>
+                                    <exclude>com.google.code.findbugs:jsr305</exclude>
+                                    <exclude>com.google.errorprone:error_prone_annotations</exclude>
+                                    <exclude>com.thoughtworks.paranamer:paranamer</exclude>
+                                    <exclude>org.apache.avro:avro</exclude>
+                                    <exclude>org.apache.beam:beam-model-job-management</exclude>
+                                    <exclude>org.apache.beam:beam-sdks-java-core</exclude>
+                                    <exclude>org.apache.beam:beam-vendor-bytebuddy-1_11_0</exclude>
+                                    <exclude>org.apache.commons:commons-compress</exclude>
+                                    <exclude>org.codehaus.jackson:jackson-core-asl</exclude>
+                                    <exclude>org.codehaus.jackson:jackson-mapper-asl</exclude>
+                                    <exclude>org.tukaani:xz</exclude>
+                                    <exclude>org.xerial.snappy:snappy-java</exclude>
+                                </excludes>
+                            </artifactSet>
+                            <transformers>
+                                <transformer
+                                    implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer"/>
+                                <transformer
+                                    implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                                <transformer implementation="org.apache.maven.plugins.shade.JandexIndexTransformer"/>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <modules>
+        <module>beam-io-kafka</module>
+    </modules>
+
+    <profiles>
+        <profile>
+            <id>env-dev</id>
+            <modules>
+                <module>beam-io-commons</module>
+
+                <module>beam-io-debezium</module>
+                <module>beam-io-hadoop</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>env-test</id>
+            <modules>
+                <module>beam-io-amazon</module>
+                <module>beam-io-azure</module>
+                <module>beam-io-gcp</module>
+                <module>beam-io-snowflake</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>env-prod</id>
+            <properties>
+                <dist.shade-phase>package</dist.shade-phase>
+            </properties>
+        </profile>
+    </profiles>
+</project>

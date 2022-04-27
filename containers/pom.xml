@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.apache.hop</groupId>
+        <artifactId>hop-containers</artifactId>
+        <version>2.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>containers</artifactId>
+
+    <properties>
+        <hop.work-dir>${project.build.directory}/it</hop.work-dir>
+        <hop.res-path>../it/src/main/resources</hop.res-path>
+        <excludeScope>provided</excludeScope>
+        <exec.executable>/bin/sh</exec.executable>
+        <exec.args>${project.build.scriptSourceDirectory}/build.sh ${project.version}</exec.args>
+        <phase.copy-logback>none</phase.copy-logback>
+        <docker.image.prefix>192.168.1.84:8443/library</docker.image.prefix>
+
+        <jdk-image.name>openjdk</jdk-image.name>
+        <jdk-image.version>11</jdk-image.version>
+
+        <flink-image.name>flink</flink-image.name>
+        <flink-image.version>1.13-java11</flink-image.version>
+        <flink.tag>1.13</flink.tag>
+        <flink.opt-path>${project.build.directory}/opt/flink</flink.opt-path>
+
+        <oshi-core.version>3.4.0</oshi-core.version>
+        <jna.version>5.4.0</jna.version>
+
+        <beam.runner>direct</beam.runner>
+        <hop.engine>Spark</hop.engine>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.github.oshi</groupId>
+            <artifactId>oshi-core</artifactId>
+            <version>${oshi-core.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>net.java.dev.jna</groupId>
+            <artifactId>jna</artifactId>
+            <version>${jna.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.opennews</groupId>
+            <artifactId>launcher</artifactId>
+            <version>0.1.2-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.hop</groupId>
+            <artifactId>hop-it-testing</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <targetPath>${project.build.directory}</targetPath>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-fix-lib</id>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${flink.opt-path}/lib</outputDirectory>
+                            <includeScope>compile</includeScope>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-it-launcher</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${flink.opt-path}</outputDirectory>
+                            <includeScope>test</includeScope>
+                            <includeArtifactIds>launcher</includeArtifactIds>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>unpack-it-hop</id>
+                        <phase>process-test-resources</phase>
+                        <goals>
+                            <goal>unpack-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/it</outputDirectory>
+                            <includeScope>test</includeScope>
+                            <includeArtifactIds>hop-it-testing</includeArtifactIds>
+                            <includes>it/**/*</includes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <move todir="${flink.opt-path}/lib" flatten="true">
+                                    <fileset dir="../shaded">
+                                        <include name="**/hop-dist-${hop.version}.jar"/>
+                                        <include name="**/hop-engine-beam-app-${hop.version}.jar"/>
+                                        <include name="**/hop-plugin-dist-${hop.version}.jar"/>
+                                    </fileset>
+                                    <fileset dir="../vendor">
+                                        <include name="**/vendor-*.jar"/>
+                                    </fileset>
+                                </move>
+                                <move todir="${flink.opt-path}/opt" flatten="true">
+                                    <fileset dir="../shaded">
+                                        <include name="**/hop-tech-dist-${hop.version}.jar"/>
+                                        <include name="**/beam-io-commons-${beam.version}.jar"/>
+                                        <include name="**/beam-io-*${beam.version}.jar"/>
+                                    </fileset>
+                                </move>
+                                <move todir="${flink.opt-path}/lib-dataflow" flatten="true">
+                                    <fileset dir="../shaded">
+                                        <include name="**/beam-runner-dataflow-${beam.version}.jar"/>
+                                    </fileset>
+                                </move>
+                                <move todir="${flink.opt-path}/lib-direct" flatten="true">
+                                    <fileset dir="../shaded">
+                                        <include name="**/beam-runner-direct-${beam.version}.jar"/>
+                                    </fileset>
+                                </move>
+                                <move todir="${flink.opt-path}/lib-flink" flatten="true">
+                                    <fileset dir="../shaded">
+                                        <include name="**/beam-runner-flink-${beam.version}.jar"/>
+                                    </fileset>
+                                </move>
+                                <move todir="${flink.opt-path}/lib-spark" flatten="true">
+                                    <fileset dir="../shaded">
+                                        <include name="**/beam-runner-spark-${beam.version}.jar"/>
+                                    </fileset>
+                                </move>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <configuration>
+                    <workingDirectory>${hop.work-dir}</workingDirectory>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                        </goals>
+                        <configuration>
+                            <environmentVariables>
+                                <HOP_ENGINE>${hop.engine}</HOP_ENGINE>
+                            </environmentVariables>
+                            <additionalClasspathElements>
+                                <additionalClasspathElement>${flink.opt-path}/launcher-0.1.2-SNAPSHOT.jar</additionalClasspathElement>
+                                <additionalClasspathElement>${flink.opt-path}/lib/hop-dist-${hop.version}.jar</additionalClasspathElement>
+                                <additionalClasspathElement>${flink.opt-path}/lib/vendor-jackson-2.13.1.jar</additionalClasspathElement>
+                                <additionalClasspathElement>${flink.opt-path}/lib-${beam.runner}/beam-${beam.runner}-runner-${beam.version}.jar</additionalClasspathElement>
+                            </additionalClasspathElements>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>pkg-flink</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <beam.runner>flink</beam.runner>
+                <hop.engine>Flink</hop.engine>
+            </properties>
+        </profile>
+        <profile>
+            <id>pkg-spark</id>
+            <activation>
+                <property>
+                    <name>runner</name>
+                    <value>spark</value>
+                </property>
+            </activation>
+            <properties>
+                <beam.runner>spark</beam.runner>
+                <hop.engine>Spark</hop.engine>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>pkg-slf4j</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>ch.qos.logback</groupId>
+                    <artifactId>logback-classic</artifactId>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.logging.log4j</groupId>
+                    <artifactId>log4j-to-slf4j</artifactId>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>jcl-over-slf4j</artifactId>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>jul-to-slf4j</artifactId>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>pkg-log4j</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>pkg-log4j2</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.apache.logging.log4j</groupId>
+                    <artifactId>log4j-core</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.logging.log4j</groupId>
+                    <artifactId>log4j-slf4j-impl</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.logging.log4j</groupId>
+                    <artifactId>log4j-jul</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.logging.log4j</groupId>
+                    <artifactId>log4j-jcl</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
+</project>

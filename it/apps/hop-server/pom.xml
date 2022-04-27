@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.apache.hop.it</groupId>
+        <artifactId>apps</artifactId>
+        <version>2.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>hop-server</artifactId>
+
+    <properties>
+        <exec.launch-phase>none</exec.launch-phase>
+        <exec.launch-gui-phase>test</exec.launch-gui-phase>
+        <exec.exit-code>143</exec.exit-code>
+        <exec.jvm-args>-DHOP_PLATFORM_RUNTIME=Server</exec.jvm-args>
+        <exec.mainClass>${hop-server.mainClass}</exec.mainClass>
+        <exec.mainArg1>0.0.0.0</exec.mainArg1>
+        <exec.mainArg2>8081</exec.mainArg2>
+        <exec.timeout>5000</exec.timeout>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>unpack-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>target/it</outputDirectory>
+                            <includeArtifactIds>hop-ui</includeArtifactIds>
+                            <includes>static/**/*</includes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.hop</groupId>
+            <artifactId>hop-engine</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-nop</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!--        <dependency>-->
+        <!--            <groupId>org.springframework.boot</groupId>-->
+        <!--            <artifactId>spring-boot-starter-jetty</artifactId>-->
+        <!--            <scope>runtime</scope>-->
+        <!--        </dependency>-->
+    </dependencies>
+</project>

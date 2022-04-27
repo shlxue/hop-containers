@@ -1,0 +1,9 @@
+hop.config.folder: ../src/test/resources/config
+hop.config.file: hop-config.json
+hop.engine.type: Flink
+hop.project.home: ../src/test/resources/samples
+hop.pipeline.file: test2.hpl
+hop.run.parameters.json: '{"sourceTable":1234, "shardingItems":{"3421":{"targetTable":412}}}'
+hop.run.parameters.tableIds: 1233:412
+rest.port: 8081
+log.file: flink.log

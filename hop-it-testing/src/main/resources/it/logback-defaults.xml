@@ -1,0 +1,7 @@
+<included>
+    <logger name="org.apache.flink" level="info"/>
+    <logger name="org.apache.beam" level="info"/>
+    <logger name="org.apache.hop" level="debug"/>
+
+    <logger name="org.apache.commons.vfs2" level="warn"/>
+</included>

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.apache.hop.it</groupId>
+        <artifactId>it</artifactId>
+        <version>2.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>apps</artifactId>
+    <packaging>pom</packaging>
+    <name>Hop :: Apps</name>
+
+    <properties>
+        <!-- exec plugin options -->
+        <exec.workingdir>${project.build.directory}/it</exec.workingdir>
+        <exec.jvm-args/>
+        <exec.debug-args/>
+        <exec.os-args/>
+        <exec.mainClass/>
+        <exec.mainArg1/>
+        <exec.mainArg2/>
+        <exec.mainArgs/>
+        <exec.exit-code>0</exec.exit-code>
+        <exec.launch-phase>none</exec.launch-phase>
+        <!-- main classes -->
+        <hop-run.mainClass>org.apache.hop.run.HopRun</hop-run.mainClass>
+        <hop-runner.mainClass>org.apache.hop.it.HopRunner</hop-runner.mainClass>
+        <hop-gui.mainClass>org.apache.hop.ui.hopgui.HopGui</hop-gui.mainClass>
+        <hop-server.mainClass>org.apache.hop.www.HopServer</hop-server.mainClass>
+        <hop-translator.mainClass>org.apache.hop.ui.i18n.editor.Translator</hop-translator.mainClass>
+        <hop-beam.mainClass>org.apache.hop.beam.run.MainBeam</hop-beam.mainClass>
+    </properties>
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-install-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-install</id>
+                        <phase>none</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <configuration>
+                    <environmentVariables>
+                        <HOP_HOME>${exec.workingdir}</HOP_HOME>
+                    </environmentVariables>
+                    <classpathScope>test</classpathScope>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>launch-hop</id>
+                        <phase>${exec.launch-phase}</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>
+                                <argument>${exec.jvm-args}</argument>
+                                <argument>${exec.debug-args}</argument>
+                                <argument>${exec.os-args}</argument>
+                                <argument>-classpath</argument>
+                                <classpath/>
+                                <argument>${exec.mainClass}</argument>
+                                <argument>${exec.mainArg1}</argument>
+                                <argument>${exec.mainArg2}</argument>
+                                <argument>${exec.mainArgs}</argument>
+                            </arguments>
+                            <successCodes>${exec.exit-code}</successCodes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <modules>
+        <module>hop-run</module>
+        <module>hop-tools</module>
+        <module>hop-server</module>
+        <module>hop-translator</module>
+        <module>hop-rap</module>
+        <module>hop-rcp</module>
+    </modules>
+
+    <profiles>
+        <profile>
+            <id>env-test</id>
+            <activation>
+                <file>
+                    <exists>src/test</exists>
+                </file>
+            </activation>
+            <properties>
+                <exec.launch-phase>integration-test</exec.launch-phase>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>env-prod</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.apache.hop</groupId>
+                    <artifactId>hop-plugin-deps</artifactId>
+                    <version>${project.version}</version>
+                    <type>pom</type>
+                    <scope>runtime</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+
+        <profile>
+            <id>os-mac</id>
+            <activation>
+                <os>
+                    <family>mac</family>
+                </os>
+            </activation>
+            <properties>
+                <exec.os-args>-XstartOnFirstThread</exec.os-args>
+            </properties>
+        </profile>
+    </profiles>
+</project>

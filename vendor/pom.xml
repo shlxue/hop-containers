@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.apache.hop</groupId>
+        <artifactId>hop-containers</artifactId>
+        <version>2.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>vendor</artifactId>
+    <packaging>pom</packaging>
+
+    <properties>
+        <vendor.shade-phase>none</vendor.shade-phase>
+        <shaded.final-name/>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-shade-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>vendor-shade</id>
+                        <phase>${vendor.shade-phase}</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <shadeTestJar>false</shadeTestJar>
+                            <outputFile>${project.build.directory}/${shaded.final-name}.jar</outputFile>
+<!--                            <artifactSet>-->
+<!--                                <excludes>-->
+<!--                                    <exclude>org.slf4j:*</exclude>-->
+<!--                                    <exclude>ch.qos.logback:*</exclude>-->
+<!--                                    <exclude>org.apache.logging.log4j:*</exclude>-->
+<!--                                    <exclude>commons-cli:commons-cli</exclude>-->
+<!--                                    <exclude>com.google.errorprone:error_prone_annotations</exclude>-->
+<!--                                    <exclude>junit:*</exclude>-->
+<!--                                    <excldue>**/module-info.class</excldue>-->
+<!--                                </excludes>-->
+<!--                            </artifactSet>-->
+                            <transformers>
+                                <transformer
+                                    implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer"/>
+                                <transformer
+                                    implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <modules>
+        <module>jackson</module>
+        <module>netty</module>
+    </modules>
+</project>

@@ -1,0 +1,184 @@
+{
+  "googleCloud" : {
+    "serviceAccountKeyFile" : ""
+  },
+  "LocaleDefault" : "en_US",
+  "dropbox" : {
+    "accessToken" : ""
+  },
+  "guiProperties" : {
+    "FontFixedSize" : "13",
+    "MaxUndo" : "100",
+    "DarkMode" : "N",
+    "FontNoteSize" : "13",
+    "ShowOSLook" : "Y",
+    "FontFixedStyle" : "0",
+    "FontNoteName" : ".AppleSystemUIFont",
+    "FontFixedName" : "Monaco",
+    "FontGraphStyle" : "0",
+    "FontDefaultSize" : "13",
+    "GraphColorR" : "255",
+    "FontGraphSize" : "13",
+    "IconSize" : "32",
+    "BackgroundColorB" : "255",
+    "FontNoteStyle" : "0",
+    "FontGraphName" : ".AppleSystemUIFont",
+    "FontDefaultName" : ".AppleSystemUIFont",
+    "GraphColorG" : "255",
+    "UseGlobalFileBookmarks" : "Y",
+    "FontDefaultStyle" : "0",
+    "GraphColorB" : "255",
+    "BackgroundColorR" : "255",
+    "BackgroundColorG" : "255",
+    "WorkflowDialogStyle" : "RESIZE,MAX,MIN",
+    "LineWidth" : "1",
+    "ContextDialogShowCategories" : "Y",
+    "ContextDialogFixedWidth" : "N",
+    "TabColorR" : "240",
+    "TabColorG" : "240",
+    "TabColorB" : "240",
+    "MiddlePct" : "35",
+    "CanvasGridSize" : "16",
+    "DefaultPreviewSize" : "1000",
+    "UseDBCache" : "Y",
+    "OpenLastFile" : "Y",
+    "AutoSave" : "N",
+    "AutoSplit" : "N",
+    "ShowCopyOrDistributeWarning" : "Y",
+    "ShowCanvasGrid" : "Y",
+    "ShowExitWarning" : "Y",
+    "ShowToolTips" : "Y",
+    "AutoCollapseCoreObjectsTree" : "N",
+    "ShowHelpToolTips" : "Y",
+    "UseDoubleClickOnCanvas" : "Y",
+    "TableOutputSortMappings" : "N",
+    "CustomParameterEnterOptionsRestartWarning" : "Y"
+  },
+  "googleDrive" : {
+    "credentialsFile" : "",
+    "tokensFolder" : ""
+  },
+  "projectsConfig": {
+    "enabled": true,
+    "projectMandatory": true,
+    "environmentMandatory": false,
+    "defaultProject": "default",
+    "defaultEnvironment": "",
+    "standardParentProject": "default",
+    "standardProjectsFolder": "",
+    "defaultProjectConfigFile": "project-config.json",
+    "projectConfigurations": [
+      {
+        "projectName": "default",
+        "projectHome": "${HOP_HOME}/projects/default",
+        "configFilename": "project-config.json"
+      },
+      {
+        "projectName": "samples",
+        "projectHome": "${HOP_HOME}/projects/samples",
+        "configFilename": "project-config.json"
+      },
+      {
+        "projectName": "actions",
+        "projectHome": "${HOP_HOME}/integration-tests/actions",
+        "configFilename": "project-config.json"
+      },
+      {
+        "projectName": "beam_directrunner",
+        "projectHome": "${HOP_HOME}/integration-tests/beam_directrunner",
+        "configFilename": "project-config.json"
+      },
+      {
+        "projectName": "cassandra",
+        "projectHome": "${HOP_HOME}/integration-tests/cassandra",
+        "configFilename": "project-config.json"
+      },
+      {
+        "projectName": "database",
+        "projectHome": "${HOP_HOME}/integration-tests/database",
+        "configFilename": "project-config.json"
+      },
+      {
+        "projectName": "hop_server",
+        "projectHome": "${HOP_HOME}/integration-tests/hop_server",
+        "configFilename": "project-config.json"
+      },
+      {
+        "projectName": "http",
+        "projectHome": "${HOP_HOME}/integration-tests/http",
+        "configFilename": "project-config.json"
+      },
+      {
+        "projectName": "kafka",
+        "projectHome": "${HOP_HOME}/integration-tests/kafka",
+        "configFilename": "project-config.json"
+      },
+      {
+        "projectName": "mdi",
+        "projectHome": "${HOP_HOME}/integration-tests/mdi",
+        "configFilename": "project-config.json"
+      },
+      {
+        "projectName": "monetdb",
+        "projectHome": "${HOP_HOME}/integration-tests/monetdb",
+        "configFilename": "project-config.json"
+      },
+      {
+        "projectName": "mongo",
+        "projectHome": "${HOP_HOME}/integration-tests/mongo",
+        "configFilename": "project-config.json"
+      },
+      {
+        "projectName": "neo4j",
+        "projectHome": "${HOP_HOME}/integration-tests/neo4j",
+        "configFilename": "project-config.json"
+      },
+      {
+        "projectName": "parameters_and_variables",
+        "projectHome": "${HOP_HOME}/integration-tests/parameters_and_variables",
+        "configFilename": "project-config.json"
+      },
+      {
+        "projectName": "partitioning",
+        "projectHome": "${HOP_HOME}/integration-tests/partitioning",
+        "configFilename": "project-config.json"
+      },
+      {
+        "projectName": "scripting",
+        "projectHome": "${HOP_HOME}/integration-tests/scripting",
+        "configFilename": "project-config.json"
+      },
+      {
+        "projectName": "sort_and_unique",
+        "projectHome": "${HOP_HOME}/integration-tests/sort_and_unique",
+        "configFilename": "project-config.json"
+      },
+      {
+        "projectName": "spreadsheet",
+        "projectHome": "${HOP_HOME}/integration-tests/spreadsheet",
+        "configFilename": "project-config.json"
+      },
+      {
+        "projectName": "transforms",
+        "projectHome": "${HOP_HOME}/integration-tests/transforms",
+        "configFilename": "project-config.json"
+      },
+      {
+        "projectName": "xml",
+        "projectHome": "${HOP_HOME}/integration-tests/xml",
+        "configFilename": "project-config.json"
+      }
+    ],
+    "lifecycleEnvironments": [],
+    "projectLifecycles": []
+  },
+  "azure" : {
+    "account" : "",
+    "key" : "",
+    "blockIncrement" : "4096"
+  },
+  "explorer-perspective" : {
+    "lazyLoadingDepth" : "0",
+    "fileLoadingMaxSize" : "16"
+  }
+}

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.apache.hop.it</groupId>
+        <artifactId>apps</artifactId>
+        <version>2.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>hop-run</artifactId>
+    <packaging>pom</packaging>
+
+    <properties>
+        <exec.mainClass>${hop-runner.mainClass}</exec.mainClass>
+        <exec.mainArg1>-h</exec.mainArg1>
+
+        <hop.project>default</hop.project>
+        <hop.file>pipeline-dummy.hpl</hop.file>
+        <hop.engine>local</hop.engine>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>run-pipeline</id>
+                        <phase>integration-test</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>
+                                <argument>${exec.os-args}</argument>
+                                <argument>-classpath</argument>
+                                <classpath/>
+                                <argument>${exec.mainClass}</argument>
+                                <argument>-j=${hop.project}</argument>
+                                <argument>-f=${hop.file}</argument>
+                                <argument>-r=${hop.engine}</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

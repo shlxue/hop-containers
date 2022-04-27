@@ -1,0 +1,14 @@
+{
+  "metadataBaseFolder": "${PROJECT_HOME}/metadata",
+  "unitTestsBasePath": "${PROJECT_HOME}",
+  "dataSetsCsvFolder": "${PROJECT_HOME}/datasets",
+  "enforcingExecutionInHome": true,
+  "config": {
+    "variables": [ {
+      "name": "STATE_HOST",
+      "description": "",
+      "value": "192.168.1.99:7111"
+    }
+    ]
+  }
+}

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.apache.hop.it</groupId>
+        <artifactId>apps</artifactId>
+        <version>2.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>hop-tools</artifactId>
+
+    <properties>
+        <hop-config.mainClass>org.apache.hop.config.HopConfig</hop-config.mainClass>
+        <hop-encrypt.mainClass>org.apache.hop.encryption.HopEncrypt</hop-encrypt.mainClass>
+        <hop-import.mainClass>org.apache.hop.imp.HopImport</hop-import.mainClass>
+        <hop-search.mainClass>org.apache.hop.search.HopSearch</hop-search.mainClass>
+
+        <hop-encr.mainClass>org.apache.hop.core.encryption.Encr</hop-encr.mainClass>
+
+        <exec.exit-code>1</exec.exit-code>
+        <exec.mainClass>${hop-search.mainClass}</exec.mainClass>
+        <exec.mainArg1>-h</exec.mainArg1>
+    </properties>
+</project>

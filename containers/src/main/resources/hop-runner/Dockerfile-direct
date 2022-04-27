@@ -1,0 +1,3 @@
+FROM ${flink-image.name}:${flink-image.version}
+
+ADD --chown=flink:flink opt/flink/lib  /opt/flink/lib

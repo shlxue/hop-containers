@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.apache.hop</groupId>
+        <artifactId>hop-containers</artifactId>
+        <version>2.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>shaded</artifactId>
+    <packaging>pom</packaging>
+    <name>Hop :: Shaded</name>
+
+    <properties>
+        <dist.shade-phase>none</dist.shade-phase>
+        <shaded.final-name/>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.apache.hop</groupId>
+                <artifactId>flink-bom</artifactId>
+                <version>${project.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.hop</groupId>
+                <artifactId>hop-bom</artifactId>
+                <version>${project.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-shade-plugin</artifactId>
+                <configuration>
+                    <artifactSet>
+                        <excludes>
+                            <exclude>ch.qos.logback:*</exclude>
+                            <exclude>com.fasterxml.jackson*:*</exclude>
+                            <exclude>io.netty:*</exclude>
+                            <exclude>commons-cli:commons-cli</exclude>
+                            <exclude>junit:*</exclude>
+                            <exclude>org.apache.logging.log4j:*</exclude>
+                            <exclude>org.slf4j:*</exclude>
+                        </excludes>
+                    </artifactSet>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>shade-dist</id>
+                        <phase>${dist.shade-phase}</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <shadeTestJar>false</shadeTestJar>
+                            <outputFile>${project.build.directory}/${shaded.final-name}.jar</outputFile>
+                            <transformers>
+                                <transformer
+                                    implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer"/>
+                                <transformer
+                                    implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                                <transformer implementation="org.apache.maven.plugins.shade.JandexIndexTransformer"/>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.hop</groupId>
+                        <artifactId>jandex-merge-tool</artifactId>
+                        <version>${project.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+        </plugins>
+    </build>
+
+    <modules>
+<!--        <module>beam-extensions</module>-->
+        <module>beam-shaded</module>
+
+        <module>hop-dist</module>
+        <module>hop-plugin-dist</module>
+        <module>hop-engine-beam-app</module>
+    </modules>
+
+    <profiles>
+        <profile>
+            <id>env-test</id>
+            <modules>
+                <module>flink-dist</module>
+                <module>spark-dist</module>
+                <module>hop-tech-dist</module>
+            </modules>
+        </profile>
+
+        <profile>
+            <id>pkg-shaded</id>
+            <activation>
+                <file>
+                    <missing>${basedir}/README.md</missing>
+                </file>
+            </activation>
+            <properties>
+                <dist.shade-phase>package</dist.shade-phase>
+            </properties>
+        </profile>
+    </profiles>
+</project>

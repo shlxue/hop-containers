@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.apache.hop</groupId>
+        <artifactId>shaded</artifactId>
+        <version>2.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>beam-shaded</artifactId>
+    <packaging>pom</packaging>
+    <name>Beam Shaded</name>
+
+    <properties>
+        <shaded.final-name>${project.artifactId}-${beam.version}</shaded.final-name>
+        <beam.dynamic-scope>runtime</beam.dynamic-scope>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>confluent</id>
+            <url>https://packages.confluent.io/maven/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-shade-plugin</artifactId>
+                <configuration>
+                    <artifactSet>
+                        <excludes>
+                            <exclude>com.fasterxml.jackson*:*</exclude>
+                            <exclude>com.google.code.findbugs:jsr305</exclude>
+                            <exclude>com.google.errorprone:error_prone_annotations</exclude>
+                            <exclude>com.google.guava:guava</exclude>
+                            <exclude>org.apache.beam:beam-vendor-guava-26_0-jre</exclude>
+                            <exclude>org.apache.beam:beam-vendor-grpc-1_36_0</exclude>
+                            <exclude>org.apache.commons:commons-compress</exclude>
+                            <exclude>org.apache.commons:commons-lang3</exclude>
+                            <exclude>org.yaml:snakeyaml</exclude>
+                        </excludes>
+                    </artifactSet>
+                    <filters>
+                        <filter>
+                            <artifact>*:*</artifact>
+                            <excludes>
+                                <exclude>META-INF/*.txt</exclude>
+                                <exclude>META-INF/*.DSA</exclude>
+                                <exclude>META-INF/*.RSA</exclude>
+                                <exclude>META-INF/*.SF</exclude>
+                                <exclude>META-INF/maven/**/pom.xml</exclude>
+                                <exclude>META-INF/license*/**/*</exclude>
+                                <exclude>META-INF/versions/**</exclude>
+                                <exclude>META-INF/ASL2.0</exclude>
+                                <exclude>META-INF/DEPENDENCIES</exclude>
+                                <exclude>META-INF/LICENSE</exclude>
+                                <exclude>META-INF/MANIFEST.MF</exclude>
+                                <exclude>META-INF/NOTICE</exclude>
+                                <exclude>LICENSE*</exclude>
+                                <exclude>module-info.class</exclude>
+                                <exclude>log4j.properties</exclude>
+                                <exclude>git.properties</exclude>
+                                <exclude>io/netty/**/*</exclude>
+                                <exclude>META-INF/maven/io.netty/**/*</exclude>
+                            </excludes>
+                        </filter>
+                        <filter>
+                            <artifact>org.apache.commons:*</artifact>
+                            <excludes>
+                                <exclude>**/*</exclude>
+                            </excludes>
+                        </filter>
+
+                        <!--                        <filter>-->
+<!--                            <artifact>io.grpc:grpc-netty-shaded</artifact>-->
+<!--                            <excludes>-->
+<!--                                <exclude>META-INF/io.netty.versions.properties</exclude>-->
+<!--                            </excludes>-->
+<!--                        </filter>-->
+<!--                        <filter>-->
+<!--                            <artifact>com.google.api.grpc:proto-google-common-protos</artifact>-->
+<!--                            <excludes>-->
+<!--                                <exclude>google/**/*.proto</exclude>-->
+<!--                            </excludes>-->
+<!--                        </filter>-->
+<!--                        <filter>-->
+<!--                            <artifact>com.google.protobuf:protobuf-java</artifact>-->
+<!--                            <excludes>-->
+<!--                                <exclude>google/**/*.proto</exclude>-->
+<!--                            </excludes>-->
+<!--                        </filter>-->
+<!--                        <filter>-->
+<!--                            <artifact>com.google.zetasql:zetasql-client</artifact>-->
+<!--                            <excludes>-->
+<!--                                <exclude>META-INF/services/io.grpc*</exclude>-->
+<!--                            </excludes>-->
+<!--                        </filter>-->
+                    </filters>
+<!--                    <transformers>-->
+<!--                        <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer"/>-->
+<!--                    </transformers>-->
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+
+    <modules>
+        <module>beam-runner-direct</module>
+        <module>beam-runner-flink</module>
+        <module>beam-runner-spark</module>
+    </modules>
+
+    <profiles>
+        <profile>
+            <id>env-dev</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.apache.beam</groupId>
+                    <artifactId>beam-sdks-java-extensions-arrow</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.beam</groupId>
+                    <artifactId>beam-sdks-java-extensions-sql</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.beam</groupId>
+                    <artifactId>beam-sdks-java-extensions-sql-udf</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.beam</groupId>
+                    <artifactId>beam-sdks-java-extensions-sql-zetasql</artifactId>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>org.apache.beam</groupId>
+                            <artifactId>beam-runners-direct-java</artifactId>
+                        </exclusion>
+                    </exclusions>
+                </dependency>
+            </dependencies>
+        </profile>
+
+        <profile>
+            <id>env-test</id>
+            <modules>
+                <module>beam-runner-dataflow</module>
+            </modules>
+            <dependencies>
+                <dependency>
+                    <groupId>org.apache.beam</groupId>
+                    <artifactId>beam-sdks-java-io-hadoop-common</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.beam</groupId>
+                    <artifactId>beam-sdks-java-io-hadoop-file-system</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>com.fasterxml.jackson.module</groupId>
+                    <artifactId>jackson-module-scala_${spark-bin.version}</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+
+        <profile>
+            <id>pkg-shaded</id>
+            <activation>
+                <file>
+                    <missing>${basedir}/README.md</missing>
+                </file>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>org.apache.beam</groupId>
+                    <artifactId>beam-sdks-java-core</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.beam</groupId>
+                    <artifactId>beam-sdks-java-io-synthetic</artifactId>
+                </dependency>
+
+                <dependency>
+                    <groupId>org.apache.beam</groupId>
+                    <artifactId>beam-sdks-java-extensions-join-library</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.beam</groupId>
+                    <artifactId>beam-sdks-java-extensions-protobuf</artifactId>
+                </dependency>
+
+                <dependency>
+                    <groupId>org.apache.beam</groupId>
+                    <artifactId>beam-sdks-java-io-kafka</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.kafka</groupId>
+                    <artifactId>kafka-clients</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
+</project>
