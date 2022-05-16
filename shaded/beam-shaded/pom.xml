@@ -38,8 +38,6 @@
                             <exclude>com.google.code.findbugs:jsr305</exclude>
                             <exclude>com.google.errorprone:error_prone_annotations</exclude>
                             <exclude>com.google.guava:guava</exclude>
-                            <exclude>org.apache.beam:beam-vendor-guava-26_0-jre</exclude>
-                            <exclude>org.apache.beam:beam-vendor-grpc-1_36_0</exclude>
                             <exclude>org.apache.commons:commons-compress</exclude>
                             <exclude>org.apache.commons:commons-lang3</exclude>
                             <exclude>org.yaml:snakeyaml</exclude>
