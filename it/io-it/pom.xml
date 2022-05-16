@@ -28,22 +28,26 @@
             <groupId>org.apache.hop.it</groupId>
             <artifactId>runner-it-direct</artifactId>
             <version>${project.version}</version>
+            <type>pom</type>
         </dependency>
         <dependency>
             <groupId>org.apache.hop.it</groupId>
             <artifactId>runner-it-flink</artifactId>
             <version>${project.version}</version>
+            <type>pom</type>
         </dependency>
         <dependency>
             <groupId>org.apache.hop.it</groupId>
             <artifactId>runner-it-spark</artifactId>
             <version>${project.version}</version>
+            <type>pom</type>
         </dependency>
 
         <dependency>
             <groupId>org.apache.hop.it</groupId>
             <artifactId>hop-it-local</artifactId>
             <version>${project.version}</version>
+            <type>pom</type>
             <scope>test</scope>
         </dependency>
     </dependencies>

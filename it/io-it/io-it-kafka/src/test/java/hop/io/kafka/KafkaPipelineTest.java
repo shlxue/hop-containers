@@ -24,7 +24,7 @@ class KafkaPipelineTest {
   void tearDown() {}
 
   static HopEngine[] getLocal() {
-    return new HopEngine[] {HopEngine.Local};
+    return new HopEngine[] {HopEngine.local};
   }
   static HopEngine[] getFlink() {
     return new HopEngine[] {HopEngine.Flink};
