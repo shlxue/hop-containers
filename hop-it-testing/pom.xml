@@ -50,7 +50,7 @@
                         </goals>
                         <configuration>
                             <target>
-                                <unxz src="src/test/data/integration-tests-${hop.version}.tar.xz" dest="target/it.tar"/>
+                                <unxz src="src/test/data/integration-tests.tar.xz" dest="target/it.tar"/>
                                 <untar src="target/it.tar" dest="${project.build.outputDirectory}/it"/>
                             </target>
                         </configuration>
