@@ -2,6 +2,7 @@ package org.apache.hop.it;
 
 import c2m.carbon.launcher.Launcher;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 
 class DirectEngineIT {
   LaunchCmd cmd = new LaunchCmd();
@@ -12,12 +13,13 @@ class DirectEngineIT {
   }
 
   @Test
+  @EnabledIfSystemProperty(named = "HOP_ENGINE", matches = "local")
   void runStubWorkflow() throws Exception {
-    Launcher.main(cmd.hopArgs("workflow-stub.hwf"));
+    Launcher.main(cmd.hopArgs("actions/workflow-stub.hwf"));
   }
 
   @Test
   void runStubPipeline() throws Exception {
-    Launcher.main(cmd.hopArgs("pipeline-stub.hpl"));
+    Launcher.main(cmd.hopArgs("transforms/pipeline-stub.hpl"));
   }
 }

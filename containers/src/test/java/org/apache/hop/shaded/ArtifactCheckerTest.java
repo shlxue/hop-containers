@@ -1,14 +1,25 @@
 package org.apache.hop.shaded;
 
 import org.apache.hop.it.HopEngine;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ArtifactCheckerTest {
-  ArtifactChecker checker = new ArtifactChecker(Path.of("target/opt/flink"), ".*.jar");
+  static ArtifactChecker checker;
+
+  @BeforeAll
+  static void beforeAll() {
+    Path path = Path.of("target/opt/flink");
+    if (!Files.exists(path)) {
+      path = Path.of("../opt/flink");
+    }
+    checker = new ArtifactChecker(path, ".*.jar");
+  }
 
   @Test
   void showDirectContainer() {

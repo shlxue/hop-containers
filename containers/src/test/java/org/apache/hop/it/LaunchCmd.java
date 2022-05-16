@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 final class LaunchCmd {
-  static final String HOP_RUN = "org.apache.hop.run.HopRun";
+  static final String HOP_RUN = "org.apache.hop.it.HopRunner";
 
   private final String project;
   private final String hopEngine;
@@ -25,7 +25,6 @@ final class LaunchCmd {
   public LaunchCmd(String project, String hopEngine) {
     this.project = project;
     this.hopEngine = hopEngine;
-    System.out.println("==== " + hopEngine);
   }
 
   public String[] helpArgs() {
