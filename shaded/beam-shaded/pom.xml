@@ -43,6 +43,7 @@
                             <exclude>org.apache.commons:commons-compress</exclude>
                             <exclude>org.apache.commons:commons-lang3</exclude>
                             <exclude>org.yaml:snakeyaml</exclude>
+                            <exclude>org.apache.logging.log4j:*</exclude>
                         </excludes>
                     </artifactSet>
                     <filters>
@@ -67,6 +68,7 @@
                                 <exclude>git.properties</exclude>
                                 <exclude>io/netty/**/*</exclude>
                                 <exclude>META-INF/maven/io.netty/**/*</exclude>
+                                <exclude>org/slf4j/**/*</exclude>
                             </excludes>
                         </filter>
                         <filter>
