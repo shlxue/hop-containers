@@ -21,11 +21,6 @@
         </dependency>
         <dependency>
             <groupId>org.apache.hop.it</groupId>
-            <artifactId>runner-it-dataflow</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.hop.it</groupId>
             <artifactId>runner-it-direct</artifactId>
             <version>${project.version}</version>
             <type>pom</type>
@@ -55,4 +50,18 @@
     <modules>
         <module>io-it-kafka</module>
     </modules>
+
+    <profiles>
+        <profile>
+            <id>env-test</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.apache.hop.it</groupId>
+                    <artifactId>runner-it-dataflow</artifactId>
+                    <version>${project.version}</version>
+                    <type>pom</type>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
 </project>
