@@ -9,16 +9,9 @@
     </parent>
 
     <artifactId>containers</artifactId>
+    <packaging>pom</packaging>
 
     <properties>
-        <hop.work-dir>${project.build.directory}/it</hop.work-dir>
-        <hop.res-path>../it/src/main/resources</hop.res-path>
-        <excludeScope>provided</excludeScope>
-        <exec.executable>/bin/sh</exec.executable>
-        <exec.args>${project.build.scriptSourceDirectory}/build.sh ${project.version}</exec.args>
-        <phase.copy-logback>none</phase.copy-logback>
-        <docker.image.prefix>192.168.1.84:8443/library</docker.image.prefix>
-
         <jdk-image.name>openjdk</jdk-image.name>
         <jdk-image.version>11</jdk-image.version>
 
@@ -30,8 +23,22 @@
         <oshi-core.version>3.4.0</oshi-core.version>
         <jna.version>5.4.0</jna.version>
 
-        <beam.runner>direct</beam.runner>
-        <hop.engine>Spark</hop.engine>
+        <!-- exec plugin options -->
+        <exec.workingdir>${project.build.directory}/it</exec.workingdir>
+        <exec.executable>java</exec.executable>
+        <exec.jvm-args/>
+        <exec.debug-args/>
+        <exec.os-args/>
+        <exec.mainClass>c2m.carbon.launcher.Launcher</exec.mainClass>
+        <exec.mainArg1>-main</exec.mainArg1>
+        <exec.mainArg2>org.apache.hop.it.HopRunner</exec.mainArg2>
+
+        <hop.work-dir>${project.build.directory}/it</hop.work-dir>
+        <hop.project>default</hop.project>
+        <hop.file>transforms/pipeline-stub.hpl</hop.file>
+
+        <beam.runner>local</beam.runner>
+        <hop.engine>local</hop.engine>
     </properties>
 
     <dependencies>
@@ -51,16 +58,15 @@
             <artifactId>jna</artifactId>
             <version>${jna.version}</version>
         </dependency>
-
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>com.opennews</groupId>
             <artifactId>launcher</artifactId>
             <version>0.1.2-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -90,7 +96,17 @@
                         </goals>
                         <configuration>
                             <outputDirectory>${flink.opt-path}/lib</outputDirectory>
-                            <includeScope>compile</includeScope>
+                            <includeGroupIds>com.github.oshi,net.java.dev.jna</includeGroupIds>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-share-lib</id>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${flink.opt-path}/share</outputDirectory>
+                            <includeGroupIds>org.slf4j,org.apache.logging.log4j,ch.qos.logback,org.apache.hop</includeGroupIds>
                         </configuration>
                     </execution>
                     <execution>
@@ -112,7 +128,7 @@
                             <goal>unpack-dependencies</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${project.build.directory}/it</outputDirectory>
+                            <outputDirectory>${project.build.directory}</outputDirectory>
                             <includeScope>test</includeScope>
                             <includeArtifactIds>hop-it-testing</includeArtifactIds>
                             <includes>it/**/*</includes>
@@ -124,6 +140,7 @@
                 <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
                     <execution>
+                        <id>container-lib</id>
                         <phase>prepare-package</phase>
                         <goals>
                             <goal>run</goal>
@@ -170,8 +187,41 @@
                             </target>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>share-lib</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <move todir="${flink.opt-path}/share" flatten="true">
+                                    <fileset dir="../shaded">
+                                        <include name="**/flink-dist-${flink.version}.jar"/>
+                                    </fileset>
+                                </move>
+                                <copy todir="${hop.work-dir}">
+                                    <fileset dir="src/test/resources"/>
+                                </copy>
+                            </target>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                        <configuration>
+                            <workingDirectory>${hop.work-dir}</workingDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <configuration>
@@ -184,15 +234,54 @@
                         </goals>
                         <configuration>
                             <environmentVariables>
+                                <HOP_HOME>${hop.work-dir}</HOP_HOME>
                                 <HOP_ENGINE>${hop.engine}</HOP_ENGINE>
                             </environmentVariables>
                             <additionalClasspathElements>
                                 <additionalClasspathElement>${flink.opt-path}/launcher-0.1.2-SNAPSHOT.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${flink.opt-path}/lib/hop-dist-${hop.version}.jar</additionalClasspathElement>
+                                <additionalClasspathElement>${flink.opt-path}/lib/hop-plugin-dist-${hop.version}.jar</additionalClasspathElement>
+                                <additionalClasspathElement>${flink.opt-path}/lib/hop-engine-beam-app-${hop.version}.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${flink.opt-path}/lib/vendor-jackson-2.13.1.jar</additionalClasspathElement>
+                                <additionalClasspathElement>${flink.opt-path}/lib/vendor-netty-4.1.73.Final.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${flink.opt-path}/lib-${beam.runner}/beam-${beam.runner}-runner-${beam.version}.jar</additionalClasspathElement>
                             </additionalClasspathElements>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <configuration>
+                    <environmentVariables>
+                        <debug>true</debug>
+                        <HOP_HOME>${exec.workingdir}</HOP_HOME>
+                    </environmentVariables>
+                    <keepAlive>true</keepAlive>
+                    <arguments>
+                        <argument>${exec.jvm-args}</argument>
+                        <argument>${exec.debug-args}</argument>
+                        <argument>${exec.os-args}</argument>
+                        <argument>-classpath</argument>
+                        <classpath/>
+                        <argument>${exec.mainClass}</argument>
+                        <argument>${exec.mainArg1}</argument>
+                        <argument>${exec.mainArg2}</argument>
+                        <argument>--</argument>
+                        <argument>-j=${hop.project}</argument>
+                        <argument>-f=${hop.file}</argument>
+                        <argument>-r=${hop.engine}</argument>
+                        <argument>-o</argument>
+                    </arguments>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>launch-hop</id>
+                        <phase>integration-test</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>
@@ -200,6 +289,13 @@
     </build>
 
     <profiles>
+        <profile>
+            <id>pkg-direct</id>
+            <properties>
+                <beam.runner>direct</beam.runner>
+                <hop.engine>Direct</hop.engine>
+            </properties>
+        </profile>
         <profile>
             <id>pkg-flink</id>
             <activation>
