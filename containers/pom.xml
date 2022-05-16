@@ -30,9 +30,8 @@
         <exec.debug-args/>
         <exec.os-args/>
         <exec.mainClass>c2m.carbon.launcher.Launcher</exec.mainClass>
-        <exec.mainArg1>-main</exec.mainArg1>
-        <exec.mainArg2>org.apache.hop.it.HopRunner</exec.mainArg2>
-
+        <exec.mainArg1>org.apache.hop.it.HopRunner</exec.mainArg1>
+        <exec.mainArg2>../opt/flink&lt;:lib:lib_${beam.runner}:share</exec.mainArg2>
         <hop.work-dir>${project.build.directory}/it</hop.work-dir>
         <hop.project>default</hop.project>
         <hop.file>transforms/pipeline-stub.hpl</hop.file>
@@ -174,17 +173,17 @@
                                         <include name="**/beam-runner-dataflow-${beam.version}.jar"/>
                                     </fileset>
                                 </move>
-                                <move todir="${flink.opt-path}/lib-direct" flatten="true">
+                                <move todir="${flink.opt-path}/lib_direct" flatten="true">
                                     <fileset dir="../shaded">
                                         <include name="**/beam-runner-direct-${beam.version}.jar"/>
                                     </fileset>
                                 </move>
-                                <move todir="${flink.opt-path}/lib-flink" flatten="true">
+                                <move todir="${flink.opt-path}/lib_flink" flatten="true">
                                     <fileset dir="../shaded">
                                         <include name="**/beam-runner-flink-${beam.version}.jar"/>
                                     </fileset>
                                 </move>
-                                <move todir="${flink.opt-path}/lib-spark" flatten="true">
+                                <move todir="${flink.opt-path}/lib_spark" flatten="true">
                                     <fileset dir="../shaded">
                                         <include name="**/beam-runner-spark-${beam.version}.jar"/>
                                     </fileset>
@@ -249,7 +248,7 @@
                                 <additionalClasspathElement>${flink.opt-path}/lib/hop-engine-beam-app-${hop.version}.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${flink.opt-path}/lib/vendor-jackson-2.13.1.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${flink.opt-path}/lib/vendor-netty-4.1.73.Final.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${flink.opt-path}/lib-${beam.runner}/beam-${beam.runner}-runner-${beam.version}.jar</additionalClasspathElement>
+                                <additionalClasspathElement>${flink.opt-path}/lib_${beam.runner}/beam-${beam.runner}-runner-${beam.version}.jar</additionalClasspathElement>
                             </additionalClasspathElements>
                         </configuration>
                     </execution>
@@ -271,7 +270,9 @@
                         <argument>-classpath</argument>
                         <classpath/>
                         <argument>${exec.mainClass}</argument>
+                        <argument>-main</argument>
                         <argument>${exec.mainArg1}</argument>
+                        <argument>-lib</argument>
                         <argument>${exec.mainArg2}</argument>
                         <argument>--</argument>
                         <argument>-j=${hop.project}</argument>
@@ -303,9 +304,6 @@
         </profile>
         <profile>
             <id>pkg-flink</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
             <properties>
                 <beam.runner>flink</beam.runner>
                 <hop.engine>Flink</hop.engine>
