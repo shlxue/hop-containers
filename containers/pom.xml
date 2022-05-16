@@ -164,7 +164,12 @@
                                         <include name="**/beam-io-*${beam.version}.jar"/>
                                     </fileset>
                                 </move>
-                                <move todir="${flink.opt-path}/lib-dataflow" flatten="true">
+                                <move todir="${flink.opt-path}/lib_local" flatten="true">
+                                    <fileset dir="../shaded">
+                                        <include name="**/beam-runner-local-${beam.version}.jar"/>
+                                    </fileset>
+                                </move>
+                                <move todir="${flink.opt-path}/lib_dataflow" flatten="true">
                                     <fileset dir="../shaded">
                                         <include name="**/beam-runner-dataflow-${beam.version}.jar"/>
                                     </fileset>

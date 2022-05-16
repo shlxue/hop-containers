@@ -80,6 +80,7 @@
 
     <modules>
 <!--        <module>beam-extensions</module>-->
+        <module>beam-runner-local</module>
         <module>beam-shaded</module>
 
         <module>flink-dist</module>
