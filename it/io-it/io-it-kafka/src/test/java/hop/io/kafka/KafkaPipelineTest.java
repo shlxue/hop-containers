@@ -38,7 +38,7 @@ class KafkaPipelineTest {
 
   @ParameterizedTest
   @MethodSource("getFlink")
-  void runPipeline(HopEngine engine) {
+  void runPipeline(HopEngine engine) throws Exception {
     System.setProperty("run_configuration", engine.toString());
     TestFile testFile = new TestFile("samples");
     testFile.setFile(testFile.find("test2.hpl"));
