@@ -1,5 +1,6 @@
 package org.apache.hop.shaded;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.hop.it.HopEngine;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
@@ -10,17 +11,20 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+@Slf4j
 public class ArtifactChecker {
   private final Path basePath;
   private final List<Pattern> jarPatterns;
   private final List<Path> jars;
   private Map<Path, List<Artifact>> artifacts = Collections.emptyMap();
+  private final SortedMap<String, List<ArtifactInfo>> libJarArtifacts = new TreeMap<>();
 
   public ArtifactChecker(Path basePath, String... jarPattern) {
     this.basePath = basePath;
@@ -38,7 +42,6 @@ public class ArtifactChecker {
                   Collectors.toMap(
                       AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue));
     }
-    //    artifacts.forEach(this::print);
 
     return !artifacts.isEmpty();
   }
@@ -46,12 +49,20 @@ public class ArtifactChecker {
   public void showRunner(HopEngine hopEngine) {
     List<Path> beamRunnerJars =
         jars.stream().filter(this::isBeamRunner).collect(Collectors.toList());
-    List<Path> libJars = jars.stream().filter(this::isLibJar).collect(Collectors.toList());
 
+    if (libJarArtifacts.isEmpty()) {
+      List<Path> libJars = jars.stream().filter(this::isLibJar).collect(Collectors.toList());
+      merge(libJarArtifacts, libJars);
+    }
     SortedMap<String, List<ArtifactInfo>> artifactJars = new TreeMap<>();
-    merge(artifactJars, libJars);
+    libJarArtifacts.forEach(
+        (s, artifactInfos) ->
+            artifactJars.put(
+                s, artifactInfos.stream().map(ArtifactInfo::new).collect(Collectors.toList())));
+
+    String runner = hopEngine.toString().toLowerCase();
     beamRunnerJars.stream()
-        .filter(path -> path.getFileName().toString().contains("flink"))
+        .filter(path -> path.getFileName().toString().contains(runner))
         .findFirst()
         .ifPresent(path -> merge(artifactJars, Collections.singletonList(path)));
     artifactJars
@@ -66,17 +77,36 @@ public class ArtifactChecker {
   }
 
   private void print(Map<String, List<ArtifactInfo>> artifactJars) {
+    AtomicInteger counter = new AtomicInteger();
+    AtomicInteger duplicate = new AtomicInteger();
+    log.info("Duplicate artifacts:");
     for (Map.Entry<String, List<ArtifactInfo>> entry : artifactJars.entrySet()) {
+      counter.incrementAndGet();
       if (entry.getKey().startsWith("org.apache.hop")) {
         continue;
       }
       if (entry.getValue().size() > 1) {
-        System.out.printf(
-            "\t%d  %s\t %s%n", entry.getValue().size(), entry.getKey(), entry.getValue());
+        duplicate.incrementAndGet();
+        log.warn("{}  {}\t {}", format(entry.getValue().size()), entry.getKey(), entry.getValue());
       } else {
-        System.out.printf("\t   %s%n", entry.getKey());
+        log.debug("       {}", entry.getKey());
       }
     }
+    log.info("Summary:");
+    log.info("{}  total: {}", format(duplicate.get()), counter.get());
+    Map<String, Long> result =
+        artifactJars.keySet().stream()
+            .map(s -> s.split(":"))
+            .collect(Collectors.groupingBy(strings -> strings[0], Collectors.counting()));
+    log.info("GroupId summary:");
+    result.entrySet().stream()
+        .filter(entry -> entry.getValue() > 1)
+        .sorted((o1, o2) -> Long.compare(o2.getValue(), o1.getValue()))
+        .forEach(entry -> log.info("{}  {}", format(entry.getValue()), entry.getKey()));
+  }
+
+  private String format(long value) {
+    return String.format("%5s", value);
   }
 
   private void merge(Map<String, List<ArtifactInfo>> artifactJars, List<Path> jars) {
@@ -87,11 +117,7 @@ public class ArtifactChecker {
       Map<String, List<ArtifactInfo>> artifactJars, Path jarPath, List<Artifact> artifacts) {
     for (Artifact artifact : artifacts) {
       String key = String.format("%s:%s", artifact.getGroupId(), artifact.getArtifactId());
-      List<ArtifactInfo> paths = artifactJars.get(key);
-      if (paths == null) {
-        paths = new ArrayList<>();
-        artifactJars.put(key, paths);
-      }
+      List<ArtifactInfo> paths = artifactJars.computeIfAbsent(key, k -> new ArrayList<>());
       paths.add(new ArtifactInfo(artifact.getVersion(), jarPath.getFileName().toString()));
     }
   }
@@ -102,15 +128,6 @@ public class ArtifactChecker {
 
   private boolean isBeamRunner(Path path) {
     return path.getName(path.getNameCount() - 2).toString().startsWith("lib-");
-  }
-
-  private void print(Path path, List<Artifact> artifacts) {
-    System.out.println(path);
-    artifacts.forEach(this::print);
-  }
-
-  private void print(Artifact artifact) {
-    System.out.println(String.format("\t%s", artifact));
   }
 
   private List<Artifact> list(Path path) {
@@ -191,6 +208,11 @@ public class ArtifactChecker {
     public ArtifactInfo(String version, String jarFile) {
       this.version = version;
       this.jarFile = jarFile;
+    }
+
+    public ArtifactInfo(ArtifactInfo artifactInfo) {
+      this(artifactInfo.version, artifactInfo.jarFile);
+      this.diffVer = artifactInfo.diffVer;
     }
 
     public String getVersion() {
