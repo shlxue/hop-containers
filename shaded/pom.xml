@@ -82,6 +82,7 @@
 <!--        <module>beam-extensions</module>-->
         <module>beam-shaded</module>
 
+        <module>flink-dist</module>
         <module>hop-dist</module>
         <module>hop-plugin-dist</module>
         <module>hop-engine-beam-app</module>
@@ -91,7 +92,6 @@
         <profile>
             <id>env-test</id>
             <modules>
-                <module>flink-dist</module>
                 <module>spark-dist</module>
                 <module>hop-tech-dist</module>
             </modules>
