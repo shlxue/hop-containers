@@ -212,21 +212,6 @@
             </activation>
             <dependencies>
                 <dependency>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-log4j12</artifactId>
-                </dependency>
-            </dependencies>
-        </profile>
-        <profile>
-            <id>pkg-log4j2</id>
-            <activation>
-                <property>
-                    <name>logging</name>
-                    <value>log4j2</value>
-                </property>
-            </activation>
-            <dependencies>
-                <dependency>
                     <groupId>org.apache.logging.log4j</groupId>
                     <artifactId>log4j-core</artifactId>
                 </dependency>
