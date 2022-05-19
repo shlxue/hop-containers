@@ -2,6 +2,7 @@ package org.apache.hop.it.template;
 
 import org.apache.hop.it.HopExtension;
 import org.apache.hop.it.HopRunner;
+import org.apache.hop.it.LaunchCmd;
 import org.apache.hop.it.TestFile;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
@@ -11,26 +12,26 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 @ExtendWith(HopExtension.class)
 public class DefaultProjectIT {
-  protected TestFile testFile = new TestFile();
+  TestFile testFile = new TestFile(new LaunchCmd());
 
   @Test
   @EnabledIfSystemProperty(named = "HOP_ENGINE", matches = "local")
   void runWorkflowStub() {
-    assertDoesNotThrow(() -> HopRunner.main(testFile.getArgs("workflow-stub.hwf")));
+    assertDoesNotThrow(() -> HopRunner.main(testFile.args("workflow-stub.hwf")));
   }
 
   @Test
   void runPipelineStub() {
-    assertDoesNotThrow(() -> HopRunner.main(testFile.getArgs("pipeline-stub.hpl")));
+    assertDoesNotThrow(() -> HopRunner.main(testFile.args("pipeline-dummy.hpl")));
   }
 
   @Test
   void runPipelineDummy() {
-    assertDoesNotThrow(() -> HopRunner.main(testFile.getArgs("dummy-sample.hpl")));
+    assertDoesNotThrow(() -> HopRunner.main(testFile.args("dummy-sample.hpl")));
   }
 
   @Test
   void runPipelineRowGenerator() {
-    assertDoesNotThrow(() -> HopRunner.main(testFile.getArgs("row-generator.hpl")));
+    assertDoesNotThrow(() -> HopRunner.main(testFile.args("row-generator.hpl")));
   }
 }

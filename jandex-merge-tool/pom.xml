@@ -39,7 +39,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.hop</groupId>
-            <artifactId>hop-ui-rcp</artifactId>
+            <artifactId>hop-ui</artifactId>
             <version>${hop.version}</version>
             <scope>test</scope>
         </dependency>

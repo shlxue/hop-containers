@@ -22,6 +22,12 @@ class ArtifactCheckerTest {
   }
 
   @Test
+  void showDataflowContainer() {
+    assertTrue(checker.parse());
+    checker.showRunner(HopEngine.Dataflow);
+  }
+
+  @Test
   void showDirectContainer() {
     assertTrue(checker.parse());
     checker.showRunner(HopEngine.Direct);

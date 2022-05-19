@@ -14,8 +14,8 @@
 
     <properties>
         <!-- exec plugin options -->
-        <exec.workingdir>${project.build.directory}/it</exec.workingdir>
-        <exec.jvm-args/>
+        <exec.workingdir>${hop.it-home}</exec.workingdir>
+        <exec.jvm-args>-DHOP_HOME=${hop.it-home}</exec.jvm-args>
         <exec.debug-args/>
         <exec.os-args/>
         <exec.mainClass/>
@@ -25,12 +25,13 @@
         <exec.exit-code>0</exec.exit-code>
         <exec.launch-phase>none</exec.launch-phase>
         <!-- main classes -->
-        <hop-run.mainClass>org.apache.hop.run.HopRun</hop-run.mainClass>
-        <hop-runner.mainClass>org.apache.hop.it.HopRunner</hop-runner.mainClass>
-        <hop-gui.mainClass>org.apache.hop.ui.hopgui.HopGui</hop-gui.mainClass>
-        <hop-server.mainClass>org.apache.hop.www.HopServer</hop-server.mainClass>
-        <hop-translator.mainClass>org.apache.hop.ui.i18n.editor.Translator</hop-translator.mainClass>
-        <hop-beam.mainClass>org.apache.hop.beam.run.MainBeam</hop-beam.mainClass>
+        <hop.runner-mainClass>org.apache.hop.it.HopRunner</hop.runner-mainClass>
+        <hop.gui-mainClass>org.apache.hop.ui.hopgui.HopGui</hop.gui-mainClass>
+        <hop.server-mainClass>org.apache.hop.www.HopServer</hop.server-mainClass>
+        <hop.translator-mainClass>org.apache.hop.ui.i18n.editor.Translator</hop.translator-mainClass>
+        <hop.beam-mainClass>org.apache.hop.beam.run.MainBeam</hop.beam-mainClass>
+
+        <dynamic.test-compile>none</dynamic.test-compile>
     </properties>
     <build>
         <plugins>
@@ -46,12 +47,6 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
-                <configuration>
-                    <environmentVariables>
-                        <HOP_HOME>${exec.workingdir}</HOP_HOME>
-                    </environmentVariables>
-                    <classpathScope>test</classpathScope>
-                </configuration>
                 <executions>
                     <execution>
                         <id>launch-hop</id>
@@ -60,6 +55,7 @@
                             <goal>exec</goal>
                         </goals>
                         <configuration>
+                            <classpathScope>test</classpathScope>
                             <arguments>
                                 <argument>${exec.jvm-args}</argument>
                                 <argument>${exec.debug-args}</argument>
@@ -123,6 +119,7 @@
             </activation>
             <properties>
                 <exec.os-args>-XstartOnFirstThread</exec.os-args>
+                <argLine>${exec.os-args}</argLine>
             </properties>
         </profile>
     </profiles>

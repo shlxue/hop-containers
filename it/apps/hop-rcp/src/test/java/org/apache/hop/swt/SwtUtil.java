@@ -1,6 +1,5 @@
 package org.apache.hop.swt;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
@@ -9,11 +8,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 final class SwtUtil {
-  static final long delayCloseMilli;
+  static final long swtAutoCloseDelayMilli;
 
   static {
-    String key = "SWT_CLOSE_DELAY";
-    delayCloseMilli =
+    String key = "SWT_AUTO_CLOSE_DELAY_MILLI";
+    swtAutoCloseDelayMilli =
         Long.parseLong(
             Optional.ofNullable(System.getProperty(key, System.getenv(key))).orElse("0"));
   }
@@ -24,11 +23,11 @@ final class SwtUtil {
 
     shellConsumer.accept(shell);
 
-    if (delayCloseMilli > 0) {
+    if (swtAutoCloseDelayMilli > 0) {
       display.asyncExec(
           () -> {
             try {
-              TimeUnit.MILLISECONDS.sleep(delayCloseMilli);
+              TimeUnit.MILLISECONDS.sleep(swtAutoCloseDelayMilli);
               shell.close();
               shell.dispose();
             } catch (InterruptedException ignore) {

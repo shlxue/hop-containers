@@ -1,6 +1,8 @@
 package org.apache.maven.plugins.shade;
 
 import org.apache.hop.beam.pipeline.fatjar.FatJarBuilder;
+import org.apache.hop.core.logging.HopLogStore;
+import org.apache.hop.core.logging.LogChannel;
 import org.apache.hop.core.variables.Variables;
 import org.jboss.jandex.ClassInfo;
 import org.jboss.jandex.Index;
@@ -70,8 +72,11 @@ class JandexIndexTransformerTest {
   }
 
   private void assertIndex(Index expected, Index actual) {
-    assertThat(actual.getKnownClasses(), hasSize(expected.getKnownClasses().size()));
+    assertThat(
+        actual.getKnownClasses(),
+        hasSize(expected.getKnownClasses().size()));
     for (ClassInfo ci : actual.getKnownClasses()) {
+      System.out.println(ci);
       assertThat(
           actual.getAnnotations(ci.name()), hasSize(expected.getAnnotations(ci.name()).size()));
       assertThat(
@@ -109,7 +114,11 @@ class JandexIndexTransformerTest {
   private String mergeByFatJarBuilder(Path basePath, List<String> indexJars) throws Exception {
     String targetJar = basePath.resolve("fat-jar.zip").toString();
     if (!Files.exists(Paths.get(targetJar))) {
-      FatJarBuilder fatJarBuilder = new FatJarBuilder(new Variables(), targetJar, indexJars);
+      if (!HopLogStore.isInitialized()) {
+        HopLogStore.init();
+      }
+      FatJarBuilder fatJarBuilder =
+          new FatJarBuilder(new LogChannel("shade"), new Variables(), targetJar, indexJars);
       fatJarBuilder.buildTargetJar();
     }
     return targetJar;

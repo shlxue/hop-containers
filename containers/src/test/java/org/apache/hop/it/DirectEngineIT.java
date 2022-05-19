@@ -9,17 +9,17 @@ class DirectEngineIT {
 
   @Test
   void hopRunHelp() throws Exception {
-    Launcher.main(cmd.helpArgs());
+    Launcher.main(cmd.custom("-h"));
   }
 
   @Test
   @EnabledIfSystemProperty(named = "HOP_ENGINE", matches = "local")
   void runStubWorkflow() throws Exception {
-    Launcher.main(cmd.hopArgs("actions/workflow-stub.hwf"));
+    Launcher.main(cmd.args("actions/workflow-stub.hwf"));
   }
 
   @Test
   void runStubPipeline() throws Exception {
-    Launcher.main(cmd.hopArgs("transforms/pipeline-stub.hpl"));
+    Launcher.main(cmd.args("transforms/pipeline-stub.hpl"));
   }
 }

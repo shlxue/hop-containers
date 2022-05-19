@@ -9,12 +9,13 @@
     </parent>
 
     <artifactId>hop-rcp</artifactId>
+    <packaging>pom</packaging>
 
     <properties>
-        <exec.launch-phase>none</exec.launch-phase>
-        <exec.launch-gui-phase>test</exec.launch-gui-phase>
+        <dynamic.test-compile>test-compile</dynamic.test-compile>
+
         <exec.exit-code>143</exec.exit-code>
-        <exec.mainClass>${hop-gui.mainClass}</exec.mainClass>
+        <exec.mainClass>${hop.gui-mainClass}</exec.mainClass>
         <exec.timeout>7000</exec.timeout>
     </properties>
 

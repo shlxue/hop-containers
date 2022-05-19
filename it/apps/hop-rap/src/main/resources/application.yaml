@@ -3,19 +3,10 @@ server:
     context-path: /ui
     context-parameters:
       org.eclipse.rap.applicationConfiguration: org.apache.hop.ui.hopgui.HopWeb
-#server:
-#  servlet:
-#    jsp:
-#      init-parameters:
-#        org.eclipse.rap.applicationConfiguration: org.apache.hop.ui.hopgui.HopWeb
-#    context-path: /ui
-#    context-parameters:
-#      org.eclipse.rap.applicationConfiguration: org.apache.hop.ui.hopgui.HopWeb
 spring:
   main:
     web-application-type: servlet
     banner-mode: off
 logging:
   level:
-#    root: debug
-      org.eclipse.jetty: debug
+    org.eclipse.jetty: debug

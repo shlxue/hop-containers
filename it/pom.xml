@@ -13,6 +13,11 @@
     <packaging>pom</packaging>
     <name>Hop :: IT</name>
 
+    <properties>
+        <dynamic.test-compile>test-compile</dynamic.test-compile>
+        <hop.it-res-path>../../../hop-it-testing</hop.it-res-path>
+    </properties>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -68,6 +73,13 @@
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.hop</groupId>
+            <artifactId>hop-it-testing</artifactId>
+            <version>${project.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <modules>
@@ -85,10 +97,6 @@
                     <exists>src/test</exists>
                 </file>
             </activation>
-            <properties>
-                <hop.work-dir>${project.build.directory}/it</hop.work-dir>
-                <hop.res-path>../../src/main/resources</hop.res-path>
-            </properties>
             <dependencies>
                 <dependency>
                     <groupId>org.apache.hop</groupId>
@@ -104,6 +112,7 @@
                         <artifactId>maven-compiler-plugin</artifactId>
                         <executions>
                             <execution>
+                                <phase>${dynamic.test-compile}</phase>
                                 <goals>
                                     <goal>testCompile</goal>
                                 </goals>
@@ -112,17 +121,19 @@
                     </plugin>
 
                     <plugin>
-                        <artifactId>maven-dependency-plugin</artifactId>
+                        <artifactId>maven-antrun-plugin</artifactId>
                         <executions>
                             <execution>
                                 <phase>process-test-resources</phase>
                                 <goals>
-                                    <goal>unpack-dependencies</goal>
+                                    <goal>run</goal>
                                 </goals>
                                 <configuration>
-                                    <outputDirectory>${project.build.directory}</outputDirectory>
-                                    <includeArtifactIds>hop-it-testing</includeArtifactIds>
-                                    <includes>it/**/*</includes>
+                                    <target>
+                                        <copy todir="${hop.it-home}">
+                                            <fileset dir="${hop.it-res-path}/target/classes/it"/>
+                                        </copy>
+                                    </target>
                                 </configuration>
                             </execution>
                         </executions>
@@ -131,10 +142,10 @@
                     <plugin>
                         <artifactId>maven-surefire-plugin</artifactId>
                         <configuration>
-                            <workingDirectory>${hop.work-dir}</workingDirectory>
-                            <additionalClasspathElements>
-                                <additionalClasspathElement>${hop.work-dir}</additionalClasspathElement>
-                            </additionalClasspathElements>
+                            <systemPropertyVariables>
+                                <SWT_AUTO_CLOSE_DELAY_MILLI>500</SWT_AUTO_CLOSE_DELAY_MILLI>
+                            </systemPropertyVariables>
+                            <workingDirectory>${hop.it-home}</workingDirectory>
                         </configuration>
                         <executions>
                             <execution>
@@ -146,17 +157,14 @@
                     </plugin>
                     <plugin>
                         <artifactId>maven-failsafe-plugin</artifactId>
+                        <configuration>
+                            <workingDirectory>${hop.it-home}</workingDirectory>
+                        </configuration>
                         <executions>
                             <execution>
                                 <goals>
                                     <goal>integration-test</goal>
                                 </goals>
-                                <configuration>
-                                    <workingDirectory>${hop.work-dir}</workingDirectory>
-                                    <additionalClasspathElements>
-                                        <additionalClasspathElement>${hop.work-dir}</additionalClasspathElement>
-                                    </additionalClasspathElements>
-                                </configuration>
                             </execution>
                         </executions>
                     </plugin>

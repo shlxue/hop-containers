@@ -9,17 +9,90 @@
     </parent>
 
     <artifactId>hop-tools</artifactId>
+    <packaging>pom</packaging>
 
     <properties>
-        <hop-config.mainClass>org.apache.hop.config.HopConfig</hop-config.mainClass>
-        <hop-encrypt.mainClass>org.apache.hop.encryption.HopEncrypt</hop-encrypt.mainClass>
-        <hop-import.mainClass>org.apache.hop.imp.HopImport</hop-import.mainClass>
-        <hop-search.mainClass>org.apache.hop.search.HopSearch</hop-search.mainClass>
+        <hop.config-mainClass>org.apache.hop.config.HopConfig</hop.config-mainClass>
+        <hop.encrypt-mainClass>org.apache.hop.encryption.HopEncrypt</hop.encrypt-mainClass>
+        <hop.import-mainClass>org.apache.hop.imp.HopImport</hop.import-mainClass>
+        <hop.search-mainClass>org.apache.hop.search.HopSearch</hop.search-mainClass>
 
-        <hop-encr.mainClass>org.apache.hop.core.encryption.Encr</hop-encr.mainClass>
-
-        <exec.exit-code>1</exec.exit-code>
-        <exec.mainClass>${hop-search.mainClass}</exec.mainClass>
-        <exec.mainArg1>-h</exec.mainArg1>
+        <exec.mainClass>${hop.encrypt-mainClass}</exec.mainClass>
+        <exec.mainArg1>-hop</exec.mainArg1>
+        <exec.mainArg2>123456</exec.mainArg2>
     </properties>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <configuration>
+                    <successCodes>1</successCodes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>launch-config</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>
+                                <argument>-cp</argument>
+                                <classpath/>
+                                <argument>${hop.config-mainClass}</argument>
+                                <argument>-h</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>launch-encrypt</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>
+                                <argument>-cp</argument>
+                                <classpath/>
+                                <argument>${hop.encrypt-mainClass}</argument>
+                                <argument>-h</argument>
+                            </arguments>
+                            <successCodes>9</successCodes>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>launch-import</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>
+                                <argument>-cp</argument>
+                                <classpath/>
+                                <argument>${hop.import-mainClass}</argument>
+                                <argument>-h</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>launch-search</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>
+                                <argument>-cp</argument>
+                                <classpath/>
+                                <argument>${hop.search-mainClass}</argument>
+                                <argument>-h</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

@@ -43,10 +43,10 @@ public class HopExtension
   }
 
   @Override
-  public void afterEach(ExtensionContext extensionContext) throws Exception {}
+  public void afterEach(ExtensionContext extensionContext) {}
 
   @Override
-  public void beforeEach(ExtensionContext extensionContext) throws Exception {}
+  public void beforeEach(ExtensionContext extensionContext) {}
 
   private boolean isLazyInit() {
     return hop != null && hop.lazy();
@@ -60,9 +60,9 @@ public class HopExtension
   }
 
   private void applyConfig(HopEngine engine) {
-    System.setProperty("HOP_HOME", Projects.ROOT_PATH.toString());
-    System.setProperty("HOP_AUDIT_FOLDER", Projects.ROOT_PATH.resolve("audit").toString());
-    System.setProperty("HOP_CONFIG_FOLDER", Projects.ROOT_PATH.resolve("config").toString());
+    System.setProperty("HOP_HOME", Projects.HOP_HOME.toString());
+    System.setProperty("HOP_AUDIT_FOLDER", Projects.HOP_HOME.resolve("audit").toString());
+    System.setProperty("HOP_CONFIG_FOLDER", Projects.HOP_HOME.resolve("config").toString());
     System.setProperty("HOP_ENGINE", engine.toString());
     System.setProperty("run_configuration", engine.toString());
     System.setProperty(Const.HOP_DISABLE_CONSOLE_LOGGING, "Y");

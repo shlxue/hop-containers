@@ -12,7 +12,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <hop.res-path>../src/main/resources</hop.res-path>
+        <hop.it-res-path>../../hop-it-testing</hop.it-res-path>
     </properties>
 
     <dependencies>

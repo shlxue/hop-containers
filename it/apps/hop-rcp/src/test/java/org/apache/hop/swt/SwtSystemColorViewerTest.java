@@ -3,7 +3,6 @@ package org.apache.hop.swt;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
@@ -17,7 +16,7 @@ class SwtSystemColorViewerTest {
     SwtUtil.handleDialog(this::initSystemColorUI);
   }
 
-  private void initSystemColorUI(Shell shell) {
+  void initSystemColorUI(Shell shell) {
     shell.setText("SWT System Color");
     shell.setMaximized(true);
     shell.setLayout(new GridLayout(5, false));
@@ -87,7 +86,7 @@ class SwtSystemColorViewerTest {
 
     Text wBackground = new Text(parent, SWT.BORDER | SWT.RIGHT);
     wBackground.setText(name);
-    wBackground.setToolTipText(name + "  " + id);
+    wBackground.setToolTipText(colorText);
     wBackground.setBackground(c);
     wBackground.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 

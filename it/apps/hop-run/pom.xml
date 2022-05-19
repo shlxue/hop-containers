@@ -12,12 +12,8 @@
     <packaging>pom</packaging>
 
     <properties>
-        <exec.mainClass>${hop-runner.mainClass}</exec.mainClass>
+        <exec.mainClass>${hop.runner-mainClass}</exec.mainClass>
         <exec.mainArg1>-h</exec.mainArg1>
-
-        <hop.project>default</hop.project>
-        <hop.file>pipeline-dummy.hpl</hop.file>
-        <hop.engine>local</hop.engine>
     </properties>
 
     <build>
@@ -27,20 +23,20 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>run-pipeline</id>
+                        <id>run-sample-pipeline</id>
                         <phase>integration-test</phase>
                         <goals>
                             <goal>exec</goal>
                         </goals>
                         <configuration>
                             <arguments>
-                                <argument>${exec.os-args}</argument>
+                                <argument>-DHOP_HOME=${hop.it-home}</argument>
                                 <argument>-classpath</argument>
                                 <classpath/>
-                                <argument>${exec.mainClass}</argument>
-                                <argument>-j=${hop.project}</argument>
-                                <argument>-f=${hop.file}</argument>
-                                <argument>-r=${hop.engine}</argument>
+                                <argument>org.apache.hop.run.HopRun</argument>
+                                <argument>-j=default</argument>
+                                <argument>-f=pipeline-dummy.hpl</argument>
+                                <argument>-r=local</argument>
                             </arguments>
                         </configuration>
                     </execution>

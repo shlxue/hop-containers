@@ -30,6 +30,8 @@
         <spring-boot.version>2.6.3</spring-boot.version>
 
         <exec.executable>java</exec.executable>
+        <hop.it-home>${project.build.directory}/it</hop.it-home>
+        <maven.test.failure.ignore>true</maven.test.failure.ignore>
     </properties>
 
     <build>
@@ -166,7 +168,6 @@
         <module>jdbc-driver-bundle</module>
 
         <module>hop-it-testing</module>
-        <module>it</module>
 
         <module>jandex-merge-tool</module>
         <module>shaded</module>
@@ -175,6 +176,13 @@
     </modules>
 
     <profiles>
+        <profile>
+            <id>env-test</id>
+            <modules>
+                <module>it</module>
+            </modules>
+        </profile>
+
         <profile>
             <id>pkg-slf4j</id>
             <activation>

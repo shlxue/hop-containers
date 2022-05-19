@@ -12,6 +12,7 @@
     <packaging>pom</packaging>
 
     <properties>
+        <basedir>${hop.it-home}</basedir>
         <jdk-image.name>openjdk</jdk-image.name>
         <jdk-image.version>11</jdk-image.version>
 
@@ -119,7 +120,7 @@
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>copy-fix-lib</id>
+                        <id>copy-flink-lib</id>
                         <goals>
                             <goal>copy-dependencies</goal>
                         </goals>
@@ -129,25 +130,14 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>copy-share-lib</id>
+                        <id>copy-hop-ext</id>
                         <goals>
                             <goal>copy-dependencies</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${flink.opt-path}/share</outputDirectory>
-                            <includeGroupIds>org.slf4j,org.apache.logging.log4j,ch.qos.logback,org.apache.hop</includeGroupIds>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>copy-it-launcher</id>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${flink.opt-path}</outputDirectory>
-                            <includeScope>test</includeScope>
-                            <includeArtifactIds>launcher</includeArtifactIds>
+                            <outputDirectory>${flink.opt-path}/ext</outputDirectory>
+                            <includeArtifactIds>hop-it-testing</includeArtifactIds>
+                            <includeClassifiers>jar</includeClassifiers>
                         </configuration>
                     </execution>
                     <execution>
@@ -222,21 +212,26 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>share-lib</id>
+                        <id>ext-lib</id>
                         <phase>prepare-package</phase>
                         <goals>
                             <goal>run</goal>
                         </goals>
                         <configuration>
                             <target>
-                                <move todir="${flink.opt-path}/share" flatten="true">
+                                <move todir="${flink.opt-path}/ext" flatten="true">
                                     <fileset dir="../shaded">
                                         <include name="**/flink-dist-${flink.version}.jar"/>
                                     </fileset>
                                 </move>
-                                <copy todir="${hop.work-dir}">
-                                    <fileset dir="src/test/resources"/>
+                                <copy todir="${flink.opt-path}/ext" flatten="true"
+                                      file="../hop-it-testing/target/hop-it-testing-${project.version}-tests.jar">
                                 </copy>
+                                <move todir="${flink.opt-path}/ext/jdbc">
+                                    <fileset dir="../jdbc-driver-bundle/target/dependency">
+                                        <include name="*.jar"/>
+                                    </fileset>
+                                </move>
                             </target>
                         </configuration>
                     </execution>
@@ -250,7 +245,7 @@
                             <goal>test</goal>
                         </goals>
                         <configuration>
-                            <workingDirectory>${hop.work-dir}</workingDirectory>
+                            <workingDirectory>${hop.it-home}</workingDirectory>
                         </configuration>
                     </execution>
                 </executions>
@@ -259,28 +254,28 @@
             <plugin>
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <configuration>
-                    <workingDirectory>${hop.work-dir}</workingDirectory>
+                    <workingDirectory>${hop.it-home}</workingDirectory>
+                    <environmentVariables>
+                        <HOP_HOME>${hop.it-home}</HOP_HOME>
+                        <HOP_ENGINE>${hop.engine}</HOP_ENGINE>
+                    </environmentVariables>
+                    <additionalClasspathElements>
+                        <additionalClasspathElement>${flink.opt-path}/lib/hop-dist-${hop.version}.jar</additionalClasspathElement>
+                        <additionalClasspathElement>${flink.opt-path}/lib/hop-plugin-dist-${hop.version}.jar</additionalClasspathElement>
+                        <additionalClasspathElement>${flink.opt-path}/lib/hop-engine-beam-app-${hop.version}.jar</additionalClasspathElement>
+                        <additionalClasspathElement>${flink.opt-path}/lib/vendor-jackson-2.13.1.jar</additionalClasspathElement>
+                        <additionalClasspathElement>${flink.opt-path}/lib/vendor-netty-4.1.73.Final.jar</additionalClasspathElement>
+                        <additionalClasspathElement>${flink.opt-path}/lib_${beam.runner}/beam-${beam.runner}-runner-${beam.version}.jar</additionalClasspathElement>
+                        <additionalClasspathElement>${flink.opt-path}/ext/flink-dist-${flink.version}.jar</additionalClasspathElement>
+                        <additionalClasspathElement>${flink.opt-path}/ext/hop-it-testing-${project.version}-tests.jar</additionalClasspathElement>
+                        <additionalClasspathElement>${flink.opt-path}/ext/jdbc/*.jar</additionalClasspathElement>
+                    </additionalClasspathElements>
                 </configuration>
                 <executions>
                     <execution>
                         <goals>
                             <goal>integration-test</goal>
                         </goals>
-                        <configuration>
-                            <environmentVariables>
-                                <HOP_HOME>${hop.work-dir}</HOP_HOME>
-                                <HOP_ENGINE>${hop.engine}</HOP_ENGINE>
-                            </environmentVariables>
-                            <additionalClasspathElements>
-                                <additionalClasspathElement>${flink.opt-path}/launcher-0.1.2-SNAPSHOT.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${flink.opt-path}/lib/hop-dist-${hop.version}.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${flink.opt-path}/lib/hop-plugin-dist-${hop.version}.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${flink.opt-path}/lib/hop-engine-beam-app-${hop.version}.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${flink.opt-path}/lib/vendor-jackson-2.13.1.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${flink.opt-path}/lib/vendor-netty-4.1.73.Final.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${flink.opt-path}/lib_${beam.runner}/beam-${beam.runner}-runner-${beam.version}.jar</additionalClasspathElement>
-                            </additionalClasspathElements>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -292,7 +287,6 @@
                         <debug>true</debug>
                         <HOP_HOME>${exec.workingdir}</HOP_HOME>
                     </environmentVariables>
-                    <keepAlive>true</keepAlive>
                     <arguments>
                         <argument>${exec.jvm-args}</argument>
                         <argument>${exec.debug-args}</argument>

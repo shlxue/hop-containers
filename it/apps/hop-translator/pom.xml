@@ -9,12 +9,11 @@
     </parent>
 
     <artifactId>hop-translator</artifactId>
+    <packaging>pom</packaging>
 
     <properties>
-        <exec.launch-phase>none</exec.launch-phase>
-        <exec.launch-gui-phase>test</exec.launch-gui-phase>
         <exec.exit-code>143</exec.exit-code>
-        <exec.mainClass>${hop-translator.mainClass}</exec.mainClass>
+        <exec.mainClass>${hop.translator-mainClass}</exec.mainClass>
         <exec.mainArg1>translator.xml</exec.mainArg1>
         <exec.mainArg2>./</exec.mainArg2>
         <exec.timeout>5000</exec.timeout>
